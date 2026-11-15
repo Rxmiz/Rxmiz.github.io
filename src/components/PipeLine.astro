@@ -22,8 +22,8 @@ const rows = [row(40), row(40), row(40)];
   <span class="pipe">
     <span class="tagno" aria-hidden="true">{line.id}</span>
     <span class={`marker b-${line.plant.band}`}>
-      <span class="m-metric">{line.plant.metric}</span>
       <span class="m-title">{line.plant.title}</span>
+      <span class="m-metric">{line.plant.metric}</span>
       <span class="m-source">{line.plant.source}</span>
     </span>
     <span class="glass" aria-hidden="true"><span class="water"></span></span>
@@ -36,8 +36,8 @@ const rows = [row(40), row(40), row(40)];
 
   <span class="result">
     <span class="visually-hidden">Carried into data: </span>
-    <span class="r-metric">{line.data.metric}</span>
     <span class="r-title">{line.data.title}</span>
+    <span class="r-metric">{line.data.metric}</span>
     <span class="r-source">{line.data.source}</span>
   </span>
 </a>
@@ -93,15 +93,15 @@ const rows = [row(40), row(40), row(40)];
     transition: filter 0.25s;
   }
 
-  .m-metric {
+  .m-title {
     font-stretch: 75%;
     font-weight: 800;
-    font-size: clamp(1.75rem, 2.9vw, 2.6rem);
+    font-size: clamp(1.45rem, 2.3vw, 2.15rem);
     line-height: 1;
   }
 
-  .m-title {
-    font-weight: 560;
+  .m-metric {
+    font-weight: 600;
     font-size: clamp(0.92rem, 1.05vw, 1.02rem);
     line-height: 1.25;
   }
@@ -215,16 +215,16 @@ const rows = [row(40), row(40), row(40)];
     padding-left: clamp(0.5rem, 1.5vw, 1.25rem);
   }
 
-  .r-metric {
+  .r-title {
     font-stretch: 75%;
     font-weight: 800;
-    font-size: clamp(1.75rem, 2.9vw, 2.6rem);
+    font-size: clamp(1.45rem, 2.3vw, 2.15rem);
     line-height: 1;
     color: var(--data);
   }
 
-  .r-title {
-    font-weight: 560;
+  .r-metric {
+    font-weight: 600;
     font-size: clamp(0.92rem, 1.05vw, 1.02rem);
     line-height: 1.25;
   }
@@ -242,7 +242,7 @@ const rows = [row(40), row(40), row(40)];
     filter: brightness(1.06) saturate(1.05);
   }
 
-  .line:hover .r-title {
+  .line:hover .r-metric {
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }

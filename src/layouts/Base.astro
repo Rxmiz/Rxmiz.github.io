@@ -13,7 +13,6 @@ const nav = [
   { href: '/#experience', label: 'Experience' },
   { href: '/#projects', label: 'Projects' },
   { href: '/#skills', label: 'Skills' },
-  { href: '/#about', label: 'About' },
   { href: '/#contact', label: 'Contact' },
 ];
 ---
@@ -52,7 +51,7 @@ const nav = [
       <slot />
     </main>
     <footer class="foot wrap">
-      <p>{person.name}, chemical engineer. Open to any role and to relocating anywhere.</p>
+      <p>{person.name}, chemical engineer. Always happy to talk.</p>
       <p>
         <a href={`mailto:${person.email}`}>{person.email}</a>
         <span aria-hidden="true">/</span>

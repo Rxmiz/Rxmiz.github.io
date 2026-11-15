@@ -13,13 +13,18 @@ const more = projects.filter((p) => !p.slug);
 >
   <section class="hero" aria-labelledby="hero-name">
     <div class="wrap hero-top">
-      <div class="hero-copy">
-        <h1 id="hero-name">{person.name}</h1>
-        <p class="hero-line">{person.line}</p>
-        <p class="hero-sub">
-          BASc Chemical Engineering, Minor in AI &amp; Machine Learning, University of Toronto, 2026.
-          Across two engineering internships I scaled up a pilot reactor and handled environmental compliance at an operating plant, then carried the work into data.
-        </p>
+      <div class="hero-copy" id="about">
+        <img class="hero-photo" src="/img/rami-zaineh.jpg" alt="Portrait of Rami Zaineh" width="800" height="800" />
+        <div class="hero-text">
+          <h1 id="hero-name">{person.name}</h1>
+          <p class="hero-line">{person.line}</p>
+          <p class="hero-sub">
+            I studied Chemical Engineering at the University of Toronto with a Minor in AI &amp; Machine Learning, graduating in June 2026. Across two engineering internships I scaled up a pilot reactor and worked on environmental compliance at an operating plant. I like work where a plant problem gets a measured, modelled answer.
+          </p>
+          <p class="hero-courses">
+            Coursework included Fluid Mechanics (pipe flow, pressure drop and pump sizing), Unit Operations, Control Systems, Electrochemistry, Environmental Chemistry and Forensic Engineering, plus statistics and NLP through the minor.
+          </p>
+        </div>
       </div>
       <div class="hero-tags">
         <aside class="nameplate" aria-label="Off shift">
@@ -91,8 +96,8 @@ const more = projects.filter((p) => !p.slug);
           <a class="feat" href={`/projects/${p.slug}/`}>
             <span class="feat-pipe">
               <span class="feat-marker">
-                <span class="feat-metric">{p.metric}</span>
                 <span class="feat-title">{p.title}</span>
+                <span class="feat-metric">{p.metric}</span>
               </span>
             </span>
             <span class="feat-body">
@@ -139,33 +144,12 @@ const more = projects.filter((p) => !p.slug);
     </table>
   </section>
 
-  <section id="about" class="section wrap" aria-labelledby="about-h">
-    <div class="section-head">
-      <h2 id="about-h">About</h2>
-      <span class="run" aria-hidden="true"></span>
-    </div>
-    <div class="about">
-      <img src="/img/rami-zaineh.jpg" alt="Portrait of Rami Zaineh" width="800" height="800" loading="lazy" />
-      <div class="about-copy">
-        <p class="lede">
-          I studied Chemical Engineering at the University of Toronto with a Minor in AI &amp; Machine Learning, graduating in June 2026. The two halves are the point: I like work where a plant problem gets a measured, modelled answer.
-        </p>
-        <p>
-          Along the way I took Fluid Mechanics (pipe flow, pressure drop and pump sizing), Unit Operations, Control Systems, Electrochemistry, Environmental Chemistry and Forensic Engineering, plus statistics and NLP through the minor.
-        </p>
-        <p>
-          I am open to any role and to relocating anywhere, and I am happy to travel and to work in the field.
-        </p>
-      </div>
-    </div>
-  </section>
-
   <section id="contact" class="section wrap contact" aria-labelledby="contact-h">
     <div class="section-head">
       <h2 id="contact-h">Contact</h2>
       <span class="run" aria-hidden="true"></span>
     </div>
-    <p class="lede">Hiring for an engineering or data role, anywhere? I would be glad to talk.</p>
+    <p class="lede">Questions about any of this work, or just want to talk engineering? My inbox is always open.</p>
     <a class="contact-email" href={`mailto:${person.email}`}>{person.email}</a>
     <div class="contact-tags">
       <a class="tag" href={person.resume} download><Icon name="download" />Download resume</a>
@@ -186,8 +170,33 @@ const more = projects.filter((p) => !p.slug);
     align-items: end;
   }
 
+  /* About lives in the hero: portrait beside the name */
+  .hero-copy {
+    display: grid;
+    grid-template-columns: clamp(8rem, 13vw, 12.5rem) minmax(0, 1fr);
+    gap: clamp(1.25rem, 2.5vw, 2.25rem);
+    align-items: start;
+  }
+
+  .hero-photo {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 30%;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px var(--rule), 0 10px 22px -16px rgb(28 33 36 / 0.6);
+    margin-top: 0.35rem;
+  }
+
+  .hero-courses {
+    margin-top: 0.6rem;
+    max-width: 66ch;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+  }
+
   h1 {
-    font-size: clamp(3.75rem, 9.2vw, 8.25rem);
+    font-size: clamp(3.25rem, 7.6vw, 7.25rem);
     font-stretch: 62%;
     font-weight: 820;
     line-height: 0.86;
@@ -438,14 +447,14 @@ const more = projects.filter((p) => !p.slug);
     filter: brightness(1.06) saturate(1.05);
   }
 
-  .feat-metric {
+  .feat-title {
     font-stretch: 75%;
     font-weight: 800;
-    font-size: clamp(1.9rem, 2.8vw, 2.5rem);
-    line-height: 1;
+    font-size: clamp(1.4rem, 2.1vw, 1.95rem);
+    line-height: 1.02;
   }
 
-  .feat-title {
+  .feat-metric {
     font-weight: 600;
     font-size: 1.02rem;
     line-height: 1.2;
@@ -573,28 +582,6 @@ const more = projects.filter((p) => !p.slug);
     border-bottom: 1px solid var(--rule);
   }
 
-  /* About */
-  .about {
-    display: grid;
-    grid-template-columns: minmax(14rem, 22rem) minmax(0, 1fr);
-    gap: clamp(1.5rem, 4vw, 4rem);
-    align-items: start;
-  }
-
-  .about img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-    border-radius: 3px;
-    filter: grayscale(0.15);
-  }
-
-  .about-copy {
-    display: grid;
-    gap: 1.1rem;
-    max-width: var(--measure);
-  }
-
   /* Contact */
   .contact .lede {
     margin-bottom: 1.25rem;
@@ -646,11 +633,16 @@ const more = projects.filter((p) => !p.slug);
     .job-head {
       position: static;
     }
-    .about {
+  }
+
+  @media (max-width: 560px) {
+    .hero-copy {
       grid-template-columns: 1fr;
+      gap: 1rem;
     }
-    .about img {
-      max-width: 16rem;
+    .hero-photo {
+      width: 7.5rem;
+      margin-top: 0;
     }
   }
 
