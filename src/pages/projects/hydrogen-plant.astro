@@ -1,0 +1,61 @@
+---
+import Project from '../../layouts/Project.astro';
+---
+<Project
+  title="Biomass-to-hydrogen plant"
+  description="Capstone feasibility study for a 1,000 kg/day plant producing fuel-cell grade hydrogen from corn stover: PSA sizing, mass balances, HAZOP and economics."
+  band="design"
+  service="Capstone design, CHE430"
+  dates="Fall 2025"
+  role="Seven-person team, task lead for part of the project"
+  specs={[
+    { label: 'Capacity', value: '1,000 kg/day H₂' },
+    { label: 'Purity', value: '99.99% H₂' },
+    { label: 'PSA recovery', value: '95%' },
+    { label: 'Capital cost', value: '$18.0M (AACE Class 4)' },
+    { label: 'Operating cost', value: '$6.0M/yr' },
+    { label: 'NPV, 20 years', value: '$19.3M' },
+    { label: 'IRR', value: '19.3%' },
+    { label: 'Discounted payback', value: '7.4 years' },
+    { label: 'Projected capture', value: '~7,000 t CO₂e/yr' },
+  ]}
+>
+  <figure slot="lead">
+    <div class="scroller" tabindex="0" role="region" aria-label="Process flow diagram, scrollable">
+      <img src="/figures/capstone/pfd.png" alt="Process flow diagram of the biomass-to-hydrogen plant, from biomass storage and gasifier through gas cleanup, reformer, shift reactors and PSA to high-pressure storage." width="2471" height="974" />
+    </div>
+    <figcaption><b>Fig. 01</b>Process flow diagram, with stream conditions at key points. Title block removed.</figcaption>
+  </figure>
+
+  <h2>The brief</h2>
+  <p>
+    An external client asked our team whether low-carbon, fuel-cell grade hydrogen could be made from agricultural residue in Southern Ontario, at 1,000 kg/day and at least 99.99% purity. We selected corn stover as the feedstock and a gasification route: steam and oxygen fluidized-bed gasification, gas cleanup, methane reforming, two-stage water-gas shift, pressure swing adsorption (PSA), then high-pressure storage. Our recommendation was to advance to front-end engineering design (FEED).
+  </p>
+
+  <h2>What I did</h2>
+  <ul>
+    <li>Sized the 4-bed PSA system per ASME BPVC: adsorbent mass, vessel geometry and wall thickness, for 99.99% H₂ purity at 95% recovery.</li>
+    <li>Built mass balances in Excel and Aspen, and contributed to the PFD, the P&amp;ID and the HAZOP.</li>
+    <li>Created equipment drawings and 3D models in AutoCAD Plant 3D and prepared equipment data sheets.</li>
+    <li>Wrote the design report and reviewed the design with the client at milestone meetings as task lead for part of the project.</li>
+    <li>Co-developed the CAPEX and OPEX estimates and the 20-year discounted cash flow model, with sensitivity analysis on price and discount rate.</li>
+  </ul>
+
+  <h2>The PSA unit</h2>
+  <p>
+    Shifted syngas reaches the PSA at about 10 bar. Activated carbon holds back CO₂ and heavier components while hydrogen passes through as the light product. Each bed cycles through adsorption, depressurization to about 2 bar, purge with a small share of product hydrogen, and repressurization, on short cycles so the downstream buffer sees near-steady flow. Multiple beds in parallel keep the product continuous.
+  </p>
+
+  <figure>
+    <img src="/figures/capstone/plant-3d-layout.png" alt="AutoCAD Plant 3D model of the plant layout showing the gasifier, filters, reactors, knockout drum, PSA columns, compressors and storage tanks." width="833" height="332" loading="lazy" />
+    <figcaption><b>Fig. 02</b>3D plant layout from AutoCAD Plant 3D, used to check safe distances and piping runs.</figcaption>
+  </figure>
+
+  <h2>The economics</h2>
+  <p>
+    Capital came to $18.0M as an AACE Class 4 estimate with $6.0M a year to operate. Over 20 years the discounted cash flow model gives a $19.3M NPV, a 19.3% IRR and a 7.4-year discounted payback. The two 19.3 figures are a coincidence of the model, not a typo.
+  </p>
+  <p class="callout">
+    The case rests on the client's hydrogen selling price assumption. Our sensitivity analysis found the hurdle rate and the hydrogen price moved the result most, with low-price scenarios making the project infeasible, while feedstock and maintenance costs barely moved it.
+  </p>
+</Project>

@@ -1,0 +1,89 @@
+---
+import Project from '../../layouts/Project.astro';
+---
+<Project
+  title="Reactor modelling and MPC"
+  description="Modelling an exothermic CSTR from 7,500 process samples with VARMAX, random forest and neural networks, then designing a constrained model predictive controller on coolant flow."
+  band="data"
+  service="Process control, CHE507"
+  dates="Fall 2025"
+  role="Python modelling and control design"
+  specs={[
+    { label: 'Samples', value: '7,500' },
+    { label: 'Sampling time', value: '0.1 min' },
+    { label: 'Manipulated variable', value: 'Coolant flow' },
+    { label: 'Outputs', value: 'T (K), C (mol/L)' },
+    { label: 'VARMAX(1,0) R², T', value: '0.982' },
+    { label: 'VARMAX(1,0) R², C', value: '0.949' },
+    { label: 'Poles', value: '0.870 ± 0.114j' },
+    { label: 'MPC horizon', value: '20 steps' },
+  ]}
+>
+  <h2>The process</h2>
+  <p>
+    The data comes from a continuous stirred tank reactor in the DaISy system identification database: an exothermic reaction where concentration is controlled by regulating coolant flow. That gives 7,500 samples at 0.1-minute intervals, with coolant flow (L/min) as the input and temperature (K) and concentration (mol/L) as the outputs. More coolant means a cooler reactor and, for this exothermic reaction, higher conversion, so the three variables are tightly coupled.
+  </p>
+
+  <figure>
+    <img src="/figures/cstr/cstr-time-series.png" alt="Three stacked time series of coolant flow, concentration and temperature over 750 minutes. Concentration rises and temperature falls whenever coolant flow steps up." width="990" height="995" loading="lazy" />
+    <figcaption><b>Fig. 01</b>Coolant flow, concentration and temperature over the full dataset.</figcaption>
+  </figure>
+
+  <h2>Choosing the model</h2>
+  <p>
+    I compared a classical multivariate model against machine learning, all on the same time-ordered 80/20 split.
+  </p>
+  <ul>
+    <li><strong>VARMAX</strong> forecasts both outputs together with coolant flow as the exogenous input. Of the orders tested, VARMAX(1,0) had the lowest AIC and matched the accuracy of (1,1) with fewer parameters: R² 0.982 for temperature and 0.949 for concentration.</li>
+    <li><strong>Random forest</strong> reached R² 0.898 and 0.835. Each tree is piecewise constant, so it flattened out the sharp steps in the data.</li>
+    <li><strong>Neural network (PyTorch)</strong> reached R² 0.922 on temperature. Adding lagged and rolling features pushed the fit to 0.999, but residual analysis showed the lagged model was overfitting, so I did not rely on it.</li>
+  </ul>
+  <p>
+    I chose VARMAX(1,0): accurate on the held-out data, and transparent enough to build a controller on.
+  </p>
+
+  <figure>
+    <img src="/figures/cstr/varmax-temperature-forecast.png" alt="VARMAX predicted temperature closely tracking actual temperature across the held-out test samples, including the step changes." width="1190" height="565" loading="lazy" />
+    <figcaption><b>Fig. 02</b>VARMAX(1,0) temperature forecast against the held-out 20% of the data. The plot title rounds R² to 0.983; the report's summary table gives 0.982.</figcaption>
+  </figure>
+
+  <h2>From model to controller</h2>
+  <p>The fitted VARMAX(1,0) equations become a discrete state-space model:</p>
+  <div class="eq" role="math" aria-label="Fitted model equations">
+    <p>T<sub>k</sub> = 4.9563 + 1.0077 T<sub>k−1</sub> + 39.9093 C<sub>k−1</sub> − 0.1193 u<sub>k</sub></p>
+    <p>C<sub>k</sub> = 0.3512 − 0.0008 T<sub>k−1</sub> + 0.7330 C<sub>k−1</sub> + 0.0002 u<sub>k</sub></p>
+  </div>
+  <p>
+    Its poles sit at 0.870 ± 0.114j, inside the unit circle, so the model is stable with a small damped oscillation. On the deviation model I built a receding-horizon MPC on coolant flow with a 20-step prediction horizon. The weights Q = diag(10, 1) prioritize temperature, the safety variable, and R = 0.1 discourages aggressive coolant moves that would wear valves. Temperature, concentration and flow deviations were each held inside an operating window.
+  </p>
+
+  <figure>
+    <img src="/figures/cstr/mpc-temperature-step.png" alt="Three stacked MPC response plots: temperature deviation rises to its setpoint within a few samples, concentration deviation settles at a small negative offset, and coolant flow steps down then settles." width="1210" height="720" loading="lazy" />
+    <figcaption><b>Fig. 03</b>MPC response to a temperature setpoint change: temperature, concentration and coolant flow deviations.</figcaption>
+  </figure>
+
+  <h2>What it showed</h2>
+  <p class="callout">
+    With one manipulated variable and two coupled outputs, the controller cannot move temperature without also moving concentration. A real implementation would add a second manipulated variable, such as feed flow, and identification data spanning a wider range of disturbances.
+  </p>
+</Project>
+
+<style>
+  .eq {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--ground-deep);
+    border-radius: 3px;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.05rem;
+    overflow-x: auto;
+  }
+
+  .eq p + p {
+    margin-top: 0.35rem;
+  }
+
+  .eq p {
+    white-space: nowrap;
+  }
+</style>

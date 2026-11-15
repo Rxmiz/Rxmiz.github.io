@@ -1,0 +1,15 @@
+---
+// One authored stroke set: 1.75 stroke, round joins, 24 grid.
+interface Props {
+  name: 'download' | 'mail' | 'arrow' | 'external' | 'phone' | 'gamepad';
+}
+const { name } = Astro.props;
+---
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  {name === 'download' && <><path d="M12 4v11" /><path d="m7 10 5 5 5-5" /><path d="M5 19.5h14" /></>}
+  {name === 'mail' && <><rect x="3.5" y="5.5" width="17" height="13" rx="1.5" /><path d="m4 7 8 6 8-6" /></>}
+  {name === 'arrow' && <><path d="M4 12h15" /><path d="m13 6 6 6-6 6" /></>}
+  {name === 'external' && <><path d="M14 4.5h5.5V10" /><path d="M19.5 4.5 11 13" /><path d="M18 14v4.5a1 1 0 0 1-1 1H5.5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1H10" /></>}
+  {name === 'gamepad' && <><path d="M7 7.5h10a4.5 4.5 0 0 1 4.3 5.8l-1.2 4a2.5 2.5 0 0 1-4.3.9L14 16h-4l-1.8 2.2a2.5 2.5 0 0 1-4.3-.9l-1.2-4A4.5 4.5 0 0 1 7 7.5Z" /><path d="M8 10.5v3" /><path d="M6.5 12h3" /><path d="M15.5 11h.01" /><path d="M17.5 13h.01" /></>}
+  {name === 'phone' && <path d="M6.5 3.5h3l1.5 4.5-2 1.5a11 11 0 0 0 5.5 5.5l1.5-2 4.5 1.5v3a2 2 0 0 1-2 2A15.5 15.5 0 0 1 4.5 5.5a2 2 0 0 1 2-2Z" />}
+</svg>

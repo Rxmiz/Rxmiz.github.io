@@ -1,0 +1,213 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import { person } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
+const nav = [
+  { href: '/#experience', label: 'Experience' },
+  { href: '/#projects', label: 'Projects' },
+  { href: '/#skills', label: 'Skills' },
+  { href: '/#about', label: 'About' },
+  { href: '/#contact', label: 'Contact' },
+];
+---
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#e6e9e8" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="masthead wrap">
+      <a class="mark" href="/" aria-label={`${person.name}, home`}>
+        <span class="mark-band">RZ</span>
+        {!isHome && <span class="mark-name">{person.name}</span>}
+      </a>
+      <nav aria-label="Sections">
+        <ul>
+          {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        </ul>
+      </nav>
+      <a class="mast-resume" href={person.resume} download>
+        <Icon name="download" />
+        <span>Resume</span>
+      </a>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="foot wrap">
+      <p>{person.name}, chemical engineer. Open to any role and to relocating anywhere.</p>
+      <p>
+        <a href={`mailto:${person.email}`}>{person.email}</a>
+        <span aria-hidden="true">/</span>
+        <a href={person.linkedin}>LinkedIn</a>
+      </p>
+    </footer>
+    <script>
+      // Signature motion: flow advances through each tie-in as its line enters view.
+      // Content is visible by default; this only arms the animation when motion is allowed.
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce && 'IntersectionObserver' in window) {
+        const lines = document.querySelectorAll<HTMLElement>('[data-flow]');
+        lines.forEach((el) => el.classList.add('flow-armed'));
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('flowing');
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.35 }
+        );
+        lines.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .masthead {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    padding-block: 1.25rem;
+  }
+
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    flex: none;
+  }
+
+  .mark-band {
+    display: inline-flex;
+    align-items: center;
+    height: 2rem;
+    padding: 0 1.1rem 0 0.6rem;
+    background: var(--sheen), var(--process);
+    color: var(--process-ink);
+    font-stretch: 75%;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.06em;
+    clip-path: polygon(0 0, calc(100% - 0.6rem) 0, 100% 50%, calc(100% - 0.6rem) 100%, 0 100%);
+  }
+
+  .mark-name {
+    font-stretch: 80%;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  nav {
+    margin-left: auto;
+  }
+
+  nav ul {
+    display: flex;
+    gap: clamp(0.9rem, 2vw, 1.75rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  nav a,
+  .mast-resume {
+    font-stretch: 85%;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding-block: 0.4rem;
+  }
+
+  nav a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+
+  .mast-resume {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.8rem;
+    border: 1.5px solid var(--ink);
+    border-radius: 4px;
+  }
+
+  .mast-resume:hover {
+    background: var(--ink);
+    color: var(--ground);
+  }
+
+  .mast-resume :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    padding-block: 2.5rem 3rem;
+    margin-top: clamp(4rem, 8vw, 6rem);
+    border-top: 1px solid var(--rule);
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+
+  .foot p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  @media (max-width: 860px) {
+    .masthead {
+      flex-wrap: wrap;
+      row-gap: 0.5rem;
+    }
+    .mast-resume {
+      margin-left: auto;
+    }
+    nav {
+      order: 3;
+      flex-basis: 100%;
+      margin-left: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    nav ul {
+      gap: 0.8rem;
+    }
+    nav a {
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+  }
+</style>

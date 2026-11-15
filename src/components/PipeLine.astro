@@ -1,0 +1,337 @@
+---
+import type { Line } from '../data/site';
+interface Props {
+  line: Line;
+}
+const { line } = Astro.props;
+
+// The water leaves the pipe as 1s and 0s. Deterministic per line so builds are stable.
+let seed = [...line.id].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) | 0, 2463534242);
+const bit = () => {
+  // xorshift32: integer-safe, unlike a multiply that overflows float precision
+  seed ^= seed << 13;
+  seed ^= seed >>> 17;
+  seed ^= seed << 5;
+  return (seed >>> 9) & 1 ? '1' : '0';
+};
+const row = (n: number) => Array.from({ length: n }, bit).join('');
+const rows = [row(40), row(40), row(40)];
+---
+<a class="line" href={line.href} data-flow>
+  <span class="visually-hidden">{line.service}: </span>
+  <span class="pipe">
+    <span class="tagno" aria-hidden="true">{line.id}</span>
+    <span class={`marker b-${line.plant.band}`}>
+      <span class="m-metric">{line.plant.metric}</span>
+      <span class="m-title">{line.plant.title}</span>
+      <span class="m-source">{line.plant.source}</span>
+    </span>
+    <span class="glass" aria-hidden="true"><span class="water"></span></span>
+    <span class="outlet" aria-hidden="true"></span>
+  </span>
+
+  <span class="stream" aria-hidden="true">
+    {rows.map((r, i) => <span class={`bits bits-${i + 1}`}>{r}{r}</span>)}
+  </span>
+
+  <span class="result">
+    <span class="visually-hidden">Carried into data: </span>
+    <span class="r-metric">{line.data.metric}</span>
+    <span class="r-title">{line.data.title}</span>
+    <span class="r-source">{line.data.source}</span>
+  </span>
+</a>
+
+<style>
+  .line {
+    --pipe-h: clamp(5.75rem, 7vw, 6.75rem);
+    --water-hi: #57b4d6;
+    --water: #2a85ad;
+    --water-lo: #1b5f80;
+    position: relative;
+    display: grid;
+    grid-template-columns: 58% minmax(4rem, 1fr) minmax(15rem, 22rem);
+    align-items: center;
+    column-gap: 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* The pipe: steel run from the page edge to an open outlet */
+  .pipe {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    height: var(--pipe-h);
+    padding-left: clamp(3.25rem, 6vw, 6rem);
+    background: var(--steel);
+  }
+
+  .tagno {
+    position: absolute;
+    left: clamp(0.75rem, 1.5vw, 1.5rem);
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    font-stretch: 75%;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    color: #3a4246;
+  }
+
+  .marker {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    align-content: center;
+    gap: 0.15rem;
+    min-width: 0;
+    padding: 0 clamp(2.5rem, 3.5vw, 3.5rem) 0 clamp(1rem, 1.6vw, 1.5rem);
+    background: var(--sheen), var(--band);
+    color: var(--band-ink);
+    clip-path: polygon(0 0, calc(100% - 1.75rem) 0, 100% 50%, calc(100% - 1.75rem) 100%, 0 100%);
+    transition: filter 0.25s;
+  }
+
+  .m-metric {
+    font-stretch: 75%;
+    font-weight: 800;
+    font-size: clamp(1.75rem, 2.9vw, 2.6rem);
+    line-height: 1;
+  }
+
+  .m-title {
+    font-weight: 560;
+    font-size: clamp(0.92rem, 1.05vw, 1.02rem);
+    line-height: 1.25;
+  }
+
+  .m-source {
+    font-stretch: 85%;
+    font-weight: 600;
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  /* Sight glass: the water inside, flowing toward the outlet */
+  .glass {
+    position: relative;
+    flex: 1;
+    min-width: 3rem;
+    align-self: center;
+    height: 54%;
+    margin: 0 1.25rem 0 1.5rem;
+    overflow: hidden;
+    border-radius: 3px;
+    background: linear-gradient(180deg, var(--water-hi) 0%, var(--water) 55%, var(--water-lo) 100%);
+    box-shadow:
+      inset 0 2px 4px rgb(0 0 0 / 0.5),
+      0 0 0 3px #8b9497,
+      0 0 0 4px #5f686c;
+  }
+
+  /* Ripples and bubbles: two tiles (96px, 48px) that loop seamlessly */
+  .water {
+    position: absolute;
+    inset: 0;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='40' viewBox='0 0 96 40'%3E%3Cpath d='M0 12 Q12 8 24 12 T48 12 T72 12 T96 12' fill='none' stroke='%23c9eefa' stroke-opacity='.55' stroke-width='1.6'/%3E%3Cpath d='M0 27 Q12 31 24 27 T48 27 T72 27 T96 27' fill='none' stroke='%23c9eefa' stroke-opacity='.3' stroke-width='1.2'/%3E%3C/svg%3E") 0 50% / 96px 100% repeat-x,
+      radial-gradient(circle at 30% 35%, rgb(255 255 255 / 0.6) 0 1.4px, transparent 2.4px) 0 0 / 48px 100% repeat-x,
+      radial-gradient(circle at 75% 70%, rgb(255 255 255 / 0.4) 0 1px, transparent 2px) 0 0 / 48px 100% repeat-x;
+  }
+
+  .glass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.3) 0%, rgb(255 255 255 / 0) 40%);
+  }
+
+  /* Open pipe end with its flange */
+  .outlet {
+    position: absolute;
+    right: -0.45rem;
+    top: -0.3rem;
+    bottom: -0.3rem;
+    width: 0.9rem;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #8d9598, #d6dbdb 35%, #9aa2a4 70%, #6f787b);
+    box-shadow: 0 2px 4px rgb(28 33 36 / 0.25);
+  }
+
+  .outlet::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: calc(0.3rem + var(--pipe-h) * 0.23);
+    bottom: calc(0.3rem + var(--pipe-h) * 0.23);
+    width: 0.4rem;
+    margin-left: -0.12rem;
+    border-radius: 50% / 18%;
+    background: radial-gradient(ellipse at 30% 50%, #0f1a20, #26343b);
+  }
+
+  /* The water leaves as 1s and 0s */
+  .stream {
+    display: grid;
+    align-content: center;
+    gap: 0.1rem;
+    height: var(--pipe-h);
+    padding-left: 1rem;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+  }
+
+  .bits {
+    display: block;
+    width: max-content;
+    font-stretch: 75%;
+    font-weight: 750;
+    font-size: 1rem;
+    line-height: 1.2;
+    letter-spacing: 0.22em;
+    color: var(--water);
+  }
+
+  .bits-1 {
+    opacity: 0.55;
+  }
+
+  .bits-2 {
+    font-size: 1.15rem;
+    color: var(--water-lo);
+  }
+
+  .bits-3 {
+    opacity: 0.4;
+  }
+
+  .result {
+    display: grid;
+    gap: 0.2rem;
+    padding-left: clamp(0.5rem, 1.5vw, 1.25rem);
+  }
+
+  .r-metric {
+    font-stretch: 75%;
+    font-weight: 800;
+    font-size: clamp(1.75rem, 2.9vw, 2.6rem);
+    line-height: 1;
+    color: var(--data);
+  }
+
+  .r-title {
+    font-weight: 560;
+    font-size: clamp(0.92rem, 1.05vw, 1.02rem);
+    line-height: 1.25;
+  }
+
+  .r-source {
+    font-stretch: 85%;
+    font-weight: 600;
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .line:hover .marker {
+    filter: brightness(1.06) saturate(1.05);
+  }
+
+  .line:hover .r-title {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .line:focus-visible {
+    outline-offset: 6px;
+  }
+
+  /* Motion, armed by script only when allowed; still and complete otherwise */
+  :global(.flow-armed) .water {
+    animation: water 2.8s linear infinite;
+    animation-play-state: paused;
+  }
+
+  :global(.flow-armed) .bits {
+    animation: bits 14s linear infinite;
+    animation-play-state: paused;
+  }
+
+  :global(.flow-armed) .bits-2 {
+    animation-duration: 11s;
+  }
+
+  :global(.flow-armed) .bits-3 {
+    animation-duration: 17s;
+  }
+
+  :global(.flow-armed.flowing) .water,
+  :global(.flow-armed.flowing) .bits {
+    animation-play-state: running;
+  }
+
+  @keyframes water {
+    to {
+      background-position: 96px 50%, 96px 0, 96px 0;
+    }
+  }
+
+  /* Each row holds its bits twice, so moving by half its width loops cleanly */
+  @keyframes bits {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .line {
+      grid-template-columns: 1fr;
+    }
+
+    .pipe {
+      height: auto;
+      min-height: 6.25rem;
+      padding-left: 2.75rem;
+    }
+
+    .marker {
+      flex: 1;
+      padding-block: 0.85rem;
+    }
+
+    .glass,
+    .outlet {
+      display: none;
+    }
+
+    .stream {
+      height: 2.6rem;
+      padding-left: 2.75rem;
+      gap: 0;
+    }
+
+    .bits {
+      font-size: 0.85rem;
+    }
+
+    .bits-2 {
+      font-size: 0.95rem;
+    }
+
+    .bits-3 {
+      display: none;
+    }
+
+    .result {
+      padding-left: 2.75rem;
+    }
+  }
+</style>

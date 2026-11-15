@@ -1,0 +1,65 @@
+---
+import Project from '../../layouts/Project.astro';
+---
+<Project
+  title="Crystal band gap prediction"
+  description="A PyTorch neural network predicting crystal band gap from structural and statistical features, tested against a random forest baseline, with an honest account of the results."
+  band="data"
+  service="Deep learning, APS360"
+  dates="Winter 2024"
+  role="Three-person team, built most of the code"
+  specs={[
+    { label: 'Records', value: '79,068' },
+    { label: 'Input features', value: '14' },
+    { label: 'Band gap range', value: 'Under 5.5 eV' },
+    { label: 'Split', value: '70 / 15 / 15' },
+    { label: 'Network', value: '5 hidden layers' },
+    { label: 'ANN test R²', value: '0.29' },
+    { label: 'Random forest R²', value: '0.505' },
+    { label: 'Ensemble test R²', value: '0.28' },
+  ]}
+>
+  <h2>The question</h2>
+  <p>
+    A material's band gap decides whether it conducts, insulates or behaves as a semiconductor, and it usually takes measurement or heavy simulation to find. We asked whether a neural network could predict it from information that is easy to get: the unit cell's dimensions and angles, plus summary statistics of its atomic numbers and interatomic distances.
+  </p>
+
+  <h2>What I built</h2>
+  <ul>
+    <li>The data pipeline: 79,068 records from the Materials Project, reduced to a fixed 14-feature input (cell lengths a, b, c and angles, plus mean, max, min and standard deviation of atomic numbers and of the distance matrix).</li>
+    <li>The neural network in PyTorch (hidden layers of 250, 500, 750, 500 and 100 nodes, ReLU, Adam, MSE loss), the random forest baseline, and the ensemble experiments.</li>
+    <li>Training and testing runs. A teammate ran the final hyperparameter search.</li>
+  </ul>
+  <p>
+    We started with a graph neural network. Squeezing structures of different sizes into a fixed input erased the geometric information that gives a GNN its edge, so we moved to a fully connected network.
+  </p>
+
+  <figure>
+    <img src="/figures/band-gap/ann-training-curves.png" alt="Three training curves over 1,000 epochs: MSE and MAE fall steeply then flatten, and R² rises from about minus 1.25 to about 0.3, with validation tracking training closely." width="1236" height="448" loading="lazy" />
+    <figcaption><b>Fig. 01</b>Training and validation MSE, MAE and R² over 1,000 epochs. Validation tracks training closely.</figcaption>
+  </figure>
+
+  <h2>The results, straight</h2>
+  <p>
+    The network reached a test R² of 0.29 (MSE 1.389, MAE 0.934). The random forest baseline scored higher at R² 0.505, which we traced to a baseline large enough to overfit the data. The three-model ensemble did slightly worse than the single network, at 0.28, likely because its members were too similar to cover each other's weak spots.
+  </p>
+
+  <figure>
+    <img src="/figures/band-gap/ann-density-scatter.png" alt="Density scatter of predicted against true band gap with an ideal line. Predictions cluster around 1 to 2 eV, overestimating low band gaps and underestimating high ones." width="1619" height="1223" loading="lazy" />
+    <figcaption><b>Fig. 02</b>Predicted against true band gap on the training data (R² 0.31 in the plot title; the test-set R² was 0.29). The model overestimates low gaps and underestimates high ones.</figcaption>
+  </figure>
+
+  <p>
+    The density plot shows why. Most materials in the dataset have small band gaps, so the network learned to guess toward the middle. It still sorts materials into broad classes, conductors at the low end and insulators at the high end, and its test performance matched training closely, so it learned rather than memorized.
+  </p>
+
+  <figure>
+    <img src="/figures/band-gap/band-gap-distribution.png" alt="Histogram of band gaps in the dataset, with a sharp peak near zero and a long, thin tail out to 5.5 eV." width="857" height="827" loading="lazy" />
+    <figcaption><b>Fig. 03</b>Distribution of band gaps in the training data, heavily weighted toward small gaps.</figcaption>
+  </figure>
+
+  <h2>What I would do next</h2>
+  <p>
+    Train separate models per material class, or rebalance the data, and build the ensemble from different kinds of model, such as the random forest and simple analytical relations, rather than similar networks.
+  </p>
+</Project>

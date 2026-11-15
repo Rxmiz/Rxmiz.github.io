@@ -1,0 +1,679 @@
+---
+import Base from '../layouts/Base.astro';
+import PipeLine from '../components/PipeLine.astro';
+import Icon from '../components/Icon.astro';
+import { person, rack, jobs, projects, skills, nowPlaying } from '../data/site';
+
+const featured = projects.filter((p) => p.slug);
+const more = projects.filter((p) => !p.slug);
+---
+<Base
+  title="Rami Zaineh, Chemical Engineer"
+  description="Chemical engineering graduate (University of Toronto, Minor in AI & Machine Learning) bridging plant and process work with data and modelling."
+>
+  <section class="hero" aria-labelledby="hero-name">
+    <div class="wrap hero-top">
+      <div class="hero-copy">
+        <h1 id="hero-name">{person.name}</h1>
+        <p class="hero-line">{person.line}</p>
+        <p class="hero-sub">
+          BASc Chemical Engineering, Minor in AI &amp; Machine Learning, University of Toronto, 2026.
+          Across two engineering internships I scaled up a pilot reactor and handled environmental compliance at an operating plant, then carried the work into data.
+        </p>
+      </div>
+      <div class="hero-tags">
+        <aside class="nameplate" aria-label="Off shift">
+          {nowPlaying.cover
+            ? <img src={nowPlaying.cover} alt={`${nowPlaying.title} cover art`} width="48" height="60" />
+            : <span class="np-icon"><Icon name="gamepad" /></span>}
+          <dl>
+            <dt>Off shift, now playing</dt>
+            <dd>{nowPlaying.title}</dd>
+          </dl>
+        </aside>
+        <a class="tag" href={person.resume} download>
+          <Icon name="download" />
+          Download resume
+        </a>
+        <a class="tag tag--alu" href={`mailto:${person.email}`}>
+          <Icon name="mail" />
+          Email Rami
+        </a>
+        <p class="hero-reach">
+          <a href={person.phoneHref}>{person.phone}</a>
+          <a href={person.linkedin}>LinkedIn</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="rack" role="list" aria-label="Plant work carried into data work">
+      {rack.map((line) => (
+        <div role="listitem"><PipeLine line={line} /></div>
+      ))}
+    </div>
+  </section>
+
+  <section id="experience" class="section wrap" aria-labelledby="experience-h">
+    <div class="section-head">
+      <h2 id="experience-h">Experience</h2>
+      <span class="run" aria-hidden="true"></span>
+    </div>
+
+    {jobs.map((job) => (
+      <article id={job.id} class={`job b-${job.band}`} aria-labelledby={`${job.id}-h`}>
+        <header class="job-head">
+          <h3 id={`${job.id}-h`} class="job-marker">{job.company}</h3>
+          <p class="job-role"><strong>{job.role}</strong></p>
+          <p class="job-meta">{job.place}<span aria-hidden="true">  /  </span>{job.dates}</p>
+          <p class="job-context">{job.context}</p>
+        </header>
+        <ol class="results">
+          {job.results.map((r) => (
+            <li>
+              <span class:list={['r-metric', { 'r-word': !/^[~$0-9]/.test(r.metric) }]}>{r.metric}</span>
+              <span class="r-text">{r.text}</span>
+            </li>
+          ))}
+        </ol>
+      </article>
+    ))}
+  </section>
+
+  <section id="projects" class="section wrap" aria-labelledby="projects-h">
+    <div class="section-head">
+      <h2 id="projects-h">Projects</h2>
+      <span class="run" aria-hidden="true"></span>
+    </div>
+
+    <ul class="featured">
+      {featured.map((p) => (
+        <li class={`b-${p.band}`}>
+          <a class="feat" href={`/projects/${p.slug}/`}>
+            <span class="feat-pipe">
+              <span class="feat-marker">
+                <span class="feat-metric">{p.metric}</span>
+                <span class="feat-title">{p.title}</span>
+              </span>
+            </span>
+            <span class="feat-body">
+              <span class="feat-summary">{p.summary}</span>
+              <span class="feat-tools">{p.tools}</span>
+            </span>
+            <span class="feat-go">Read the write-up <Icon name="arrow" /></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <h3 class="more-h">Also on the line</h3>
+    <ul class="more">
+      {more.map((p) => (
+        <li class={`b-${p.band}`}>
+          <span class="marker-stub" aria-hidden="true"></span>
+          <span class="more-title">{p.title}</span>
+          <span class="more-summary">{p.summary}</span>
+          <span class="more-kind">{p.metric}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section id="skills" class="section wrap" aria-labelledby="skills-h">
+    <div class="section-head">
+      <h2 id="skills-h">Skills</h2>
+      <span class="run" aria-hidden="true"></span>
+    </div>
+    <table class="linelist">
+      <caption class="visually-hidden">Skills by area</caption>
+      <thead>
+        <tr><th scope="col">Service</th><th scope="col">Contents</th></tr>
+      </thead>
+      <tbody>
+        {skills.map((s) => (
+          <tr class={`b-${s.band}`}>
+            <th scope="row"><span class="marker-stub" aria-hidden="true"></span>{s.service}</th>
+            <td>{s.contents}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+
+  <section id="about" class="section wrap" aria-labelledby="about-h">
+    <div class="section-head">
+      <h2 id="about-h">About</h2>
+      <span class="run" aria-hidden="true"></span>
+    </div>
+    <div class="about">
+      <img src="/img/rami-zaineh.jpg" alt="Portrait of Rami Zaineh" width="800" height="800" loading="lazy" />
+      <div class="about-copy">
+        <p class="lede">
+          I studied Chemical Engineering at the University of Toronto with a Minor in AI &amp; Machine Learning, graduating in June 2026. The two halves are the point: I like work where a plant problem gets a measured, modelled answer.
+        </p>
+        <p>
+          Along the way I took Fluid Mechanics (pipe flow, pressure drop and pump sizing), Unit Operations, Control Systems, Electrochemistry, Environmental Chemistry and Forensic Engineering, plus statistics and NLP through the minor.
+        </p>
+        <p>
+          I am open to any role and to relocating anywhere, and I am happy to travel and to work in the field.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section wrap contact" aria-labelledby="contact-h">
+    <div class="section-head">
+      <h2 id="contact-h">Contact</h2>
+      <span class="run" aria-hidden="true"></span>
+    </div>
+    <p class="lede">Hiring for an engineering or data role, anywhere? I would be glad to talk.</p>
+    <a class="contact-email" href={`mailto:${person.email}`}>{person.email}</a>
+    <div class="contact-tags">
+      <a class="tag" href={person.resume} download><Icon name="download" />Download resume</a>
+      <a class="tag tag--alu" href={person.phoneHref}><Icon name="phone" />{person.phone}</a>
+      <a class="tag tag--alu" href={person.linkedin}><Icon name="external" />LinkedIn</a>    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-top: clamp(1rem, 2.5vw, 2.25rem);
+  }
+
+  .hero-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2rem clamp(2rem, 5vw, 5rem);
+    align-items: end;
+  }
+
+  h1 {
+    font-size: clamp(3.75rem, 9.2vw, 8.25rem);
+    font-stretch: 62%;
+    font-weight: 820;
+    line-height: 0.86;
+    text-transform: uppercase;
+    letter-spacing: -0.012em;
+  }
+
+  .hero-line {
+    margin-top: 1.1rem;
+    font-stretch: 80%;
+    font-weight: 650;
+    font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+    line-height: 1.1;
+  }
+
+  .hero-sub {
+    margin-top: 1rem;
+    max-width: 60ch;
+    color: var(--ink-2);
+  }
+
+  /* The tags hang at the rack's right end, just above the first line */
+  .hero-tags {
+    display: grid;
+    justify-items: end;
+    gap: 0.75rem;
+    margin-bottom: calc(clamp(2rem, 3.5vw, 2.75rem) * -0.6);
+  }
+
+  .hero-reach {
+    justify-content: flex-end;
+  }
+
+  /* Riveted equipment nameplate: the one personal note on the rack */
+  .nameplate {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.6rem;
+    padding: 0.65rem 1.4rem 0.65rem 0.75rem;
+    background: linear-gradient(180deg, #f7f8f8, #d9dddd);
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px #9aa2a4, inset 0 1px 0 #fff, 0 6px 14px -10px rgb(28 33 36 / 0.45);
+  }
+
+  /* Four rivets */
+  .nameplate::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    pointer-events: none;
+    background:
+      radial-gradient(circle, #7d8689 0 1.6px, transparent 2.2px) left top / 6px 6px no-repeat,
+      radial-gradient(circle, #7d8689 0 1.6px, transparent 2.2px) right top / 6px 6px no-repeat,
+      radial-gradient(circle, #7d8689 0 1.6px, transparent 2.2px) left bottom / 6px 6px no-repeat,
+      radial-gradient(circle, #7d8689 0 1.6px, transparent 2.2px) right bottom / 6px 6px no-repeat;
+  }
+
+  .nameplate img {
+    width: 3rem;
+    height: auto;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px #5f686c;
+  }
+
+  .np-icon {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 3px;
+    background: var(--ink);
+    color: #eef1f0;
+  }
+
+  .np-icon :global(svg) {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .nameplate dl {
+    margin: 0;
+  }
+
+  .nameplate dt {
+    font-stretch: 85%;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .nameplate dd {
+    margin: 0.1rem 0 0;
+    font-stretch: 75%;
+    font-weight: 800;
+    font-size: 1.3rem;
+    line-height: 1.05;
+  }
+
+  @media (max-width: 860px) {
+    .hero-tags {
+      justify-items: start;
+      margin-bottom: 0;
+    }
+    .hero-reach {
+      justify-content: flex-start;
+    }
+  }
+
+  .hero-reach {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.1rem;
+    margin-top: 0.35rem;
+    font-size: 0.95rem;
+  }
+
+  .rack {
+    display: grid;
+    gap: clamp(1.25rem, 2.2vw, 1.75rem);
+    margin-top: clamp(2rem, 3.5vw, 2.75rem);
+  }
+
+  /* Experience */
+  .job + .job {
+    margin-top: clamp(3.5rem, 7vw, 5.5rem);
+  }
+
+  .job {
+    display: grid;
+    grid-template-columns: minmax(16rem, 0.8fr) 2fr;
+    gap: 1.5rem clamp(2rem, 5vw, 4.5rem);
+  }
+
+  .job-head {
+    align-self: start;
+    position: sticky;
+    top: 1.5rem;
+  }
+
+  .job-marker {
+    display: inline-block;
+    padding: 0.55rem 2.6rem 0.55rem 0.9rem;
+    background: var(--sheen), var(--band);
+    color: var(--band-ink);
+    font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+    line-height: 1;
+    text-transform: uppercase;
+    clip-path: polygon(0 0, calc(100% - 1.4rem) 0, 100% 50%, calc(100% - 1.4rem) 100%, 0 100%);
+  }
+
+  .job-role {
+    margin-top: 1rem;
+    font-size: 1.15rem;
+  }
+
+  .job-meta {
+    margin-top: 0.2rem;
+    color: var(--ink-2);
+    white-space: pre-wrap;
+  }
+
+  .job-context {
+    margin-top: 0.9rem;
+    color: var(--ink-2);
+    max-width: 38ch;
+  }
+
+  .results {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 2px solid var(--ink);
+  }
+
+  .results li {
+    display: grid;
+    grid-template-columns: 9.5rem 1fr;
+    gap: 1.5rem;
+    padding-block: 1rem 1.1rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .r-metric {
+    font-stretch: 75%;
+    font-weight: 800;
+    font-size: 1.75rem;
+    line-height: 1;
+    padding-top: 0.1rem;
+  }
+
+  .r-word {
+    font-size: 1.2rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding-top: 0.25rem;
+  }
+
+  .r-text {
+    max-width: var(--measure);
+  }
+
+  /* Projects */
+  /* Featured projects run as lines on the rack, like the hero */
+  .featured {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(1rem, 1.8vw, 1.4rem);
+  }
+
+  .feat {
+    display: grid;
+    grid-template-columns: minmax(22rem, 34rem) minmax(0, 1fr) auto;
+    gap: 1rem clamp(1.5rem, 3vw, 2.75rem);
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .feat-pipe {
+    display: flex;
+    align-items: stretch;
+    height: clamp(5.5rem, 6.5vw, 6.25rem);
+    /* Bleed to the viewport edge, past the centred wrap on wide screens */
+    --bleed: calc(var(--gutter) + max(0px, (100vw - 88rem) / 2));
+    margin-left: calc(var(--bleed) * -1);
+    padding-left: calc(var(--bleed) + 0.25rem);
+    background: var(--steel);
+  }
+
+  .feat-marker {
+    flex: 1;
+    display: grid;
+    align-content: center;
+    gap: 0.2rem;
+    padding: 0 2.75rem 0 1.1rem;
+    background: var(--sheen), var(--band);
+    color: var(--band-ink);
+    clip-path: polygon(0 0, calc(100% - 1.6rem) 0, 100% 50%, calc(100% - 1.6rem) 100%, 0 100%);
+    transition: filter 0.25s;
+  }
+
+  .feat:hover .feat-marker {
+    filter: brightness(1.06) saturate(1.05);
+  }
+
+  .feat-metric {
+    font-stretch: 75%;
+    font-weight: 800;
+    font-size: clamp(1.9rem, 2.8vw, 2.5rem);
+    line-height: 1;
+  }
+
+  .feat-title {
+    font-weight: 600;
+    font-size: 1.02rem;
+    line-height: 1.2;
+  }
+
+  .feat-body {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 60ch;
+  }
+
+  .feat-summary {
+    color: var(--ink);
+  }
+
+  .feat-tools {
+    color: var(--ink-2);
+    font-size: 0.92rem;
+  }
+
+  .feat-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 650;
+  }
+
+  .feat-go :global(svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+    transition: transform 0.3s var(--ease-out);
+  }
+
+  .feat:hover .feat-go :global(svg) {
+    transform: translateX(4px);
+  }
+
+  .more-h {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    margin-bottom: 1rem;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+  }
+
+  .more {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 2px solid var(--ink);
+  }
+
+  .more li {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(12rem, 1fr) 2fr 9rem;
+    gap: 0.5rem 1.5rem;
+    align-items: baseline;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .more .marker-stub {
+    align-self: center;
+  }
+
+  .more-title {
+    font-weight: 700;
+  }
+
+  .more-summary {
+    color: var(--ink-2);
+  }
+
+  .more-kind {
+    font-stretch: 85%;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: right;
+    color: var(--ink-2);
+  }
+
+  /* Skills line list */
+  .linelist {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 2px solid var(--ink);
+  }
+
+  .linelist thead th {
+    text-align: left;
+    font-stretch: 85%;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .linelist tbody th {
+    text-align: left;
+    vertical-align: top;
+    width: 30%;
+    padding: 1.1rem 1.5rem 1.1rem 0;
+    font-stretch: 85%;
+    font-size: 1.25rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .linelist tbody th .marker-stub {
+    margin-right: 0.85rem;
+    vertical-align: -0.1em;
+  }
+
+  .linelist td {
+    padding: 1.1rem 0;
+    vertical-align: top;
+    max-width: var(--measure);
+  }
+
+  .linelist tbody tr {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* About */
+  .about {
+    display: grid;
+    grid-template-columns: minmax(14rem, 22rem) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: start;
+  }
+
+  .about img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 3px;
+    filter: grayscale(0.15);
+  }
+
+  .about-copy {
+    display: grid;
+    gap: 1.1rem;
+    max-width: var(--measure);
+  }
+
+  /* Contact */
+  .contact .lede {
+    margin-bottom: 1.25rem;
+  }
+
+  .contact-email {
+    display: inline-block;
+    font-stretch: 70%;
+    font-weight: 800;
+    font-size: clamp(1.9rem, 6vw, 4.5rem);
+    line-height: 1;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.12em;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 1024px) {
+    .feat {
+      grid-template-columns: 1fr;
+      gap: 0.85rem;
+    }
+    .featured {
+      gap: 2.25rem;
+    }
+    .more li {
+      grid-template-columns: 2.75rem 1fr;
+    }
+    .more-summary,
+    .more-kind {
+      grid-column: 2;
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .job {
+      grid-template-columns: 1fr;
+    }
+    .job-head {
+      position: static;
+    }
+    .about {
+      grid-template-columns: 1fr;
+    }
+    .about img {
+      max-width: 16rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .results li {
+      grid-template-columns: 1fr;
+      gap: 0.35rem;
+    }
+    .linelist thead {
+      display: none;
+    }
+    .linelist tbody tr,
+    .linelist tbody th,
+    .linelist td {
+      display: block;
+      width: auto;
+      white-space: normal;
+    }
+    .linelist tbody th {
+      padding-bottom: 0.3rem;
+    }
+    .linelist td {
+      padding-top: 0;
+    }
+  }
+</style>

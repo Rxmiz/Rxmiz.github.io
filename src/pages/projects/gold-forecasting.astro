@@ -1,0 +1,52 @@
+---
+import Project from '../../layouts/Project.astro';
+---
+<Project
+  title="Gold price forecasting"
+  description="SARIMAX, random forest and ANN models in Python forecasting gold prices against the US Dollar Index, with lagged and rolling features lifting R² from negative to 0.867."
+  band="data"
+  service="Time-series modelling, CHE507"
+  dates="Fall 2025"
+  role="Python modelling and feature engineering"
+  specs={[
+    { label: 'Models compared', value: 'SARIMAX, RF, ANN' },
+    { label: 'Driver', value: 'US Dollar Index' },
+    { label: 'Monthly points', value: '165' },
+    { label: 'Split', value: '80/20, time-ordered' },
+    { label: 'ANN R², raw input', value: '−1.483' },
+    { label: 'ANN R², with features', value: '0.867' },
+    { label: 'RF R², with features', value: '−0.388' },
+  ]}
+>
+  <h2>The question</h2>
+  <p>
+    Gold is often treated as a hedge against a weak US dollar. I tested whether a forecasting model could capture that relationship, using monthly gold prices from the World Bank and the US Dollar Index, aligned on their common dates. That left 165 monthly points from 2006 to 2025, a small dataset for this kind of study, split 80/20 in time order so every model is tested only on dates after its training data.
+  </p>
+
+  <h2>Three models, three failure modes</h2>
+  <ul>
+    <li><strong>SARIMAX</strong>, with the dollar index as the exogenous input, had the lowest AIC of the ARIMA family and followed the trend until 2024. As a linear model it could not follow the exponential rally after that.</li>
+    <li><strong>Random forest</strong> scored R² −1.502. Trees cannot predict values outside their training range, so once gold broke its historical high the forecast went flat.</li>
+    <li><strong>Neural network</strong> scored R² −1.483 on the raw input: worse than predicting the average.</li>
+  </ul>
+
+  <h2>What changed the answer</h2>
+  <p>
+    Asset prices depend on their own recent history, so I engineered lagged values and 5-period rolling means and standard deviations for both series. The neural network jumped to R² 0.867 once I also halved its training epochs to stop it overfitting. It was the only model that followed the recent surge, though it still underpredicts the newest points. The random forest improved to R² −0.388 but still flatlined above its training range.
+  </p>
+
+  <figure>
+    <img src="/figures/gold/ann-lagged-forecast.png" alt="Neural network forecast of gold price with lagged features: predictions follow the training data closely and track the test period's sharp rise, slightly underpredicting the final months." width="1170" height="560" loading="lazy" />
+    <figcaption><b>Fig. 01</b>Neural network with lagged and rolling features: test-set R² 0.867.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="/figures/gold/rf-lagged-forecast.png" alt="Random forest forecast of gold price: the forecast follows the test data briefly, then flattens while the actual price climbs steeply." width="1180" height="650" loading="lazy" />
+    <figcaption><b>Fig. 02</b>Random forest with the same features: the forecast flattens once prices leave its training range.</figcaption>
+  </figure>
+
+  <h2>Why it matters for plant work</h2>
+  <p>
+    Process data behaves the same way: readings depend on what came before, and a model that only knows its training range can miss exactly the excursion that matters. My conclusion was a hybrid: a transparent ARIMA-type model for routine control, with a neural network watching for conditions outside the normal range.
+  </p>
+</Project>

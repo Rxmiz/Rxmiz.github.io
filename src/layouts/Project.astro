@@ -1,0 +1,276 @@
+---
+import Base from './Base.astro';
+import Icon from '../components/Icon.astro';
+import type { Band } from '../data/site';
+import { person } from '../data/site';
+
+interface Spec {
+  label: string;
+  value: string;
+}
+interface Props {
+  title: string;
+  description: string;
+  band: Band;
+  service: string;
+  dates: string;
+  role: string;
+  specs: Spec[];
+  repo?: string;
+}
+const { title, description, band, service, dates, role, specs, repo } = Astro.props;
+---
+<Base title={`${title}, Rami Zaineh`} description={description}>
+  <article class={`proj b-${band}`}>
+    <header class="proj-head wrap">
+      <a class="back" href="/#projects"><Icon name="arrow" /><span>All projects</span></a>
+      <div class="proj-pipe" aria-hidden="true"><span class="proj-band"></span></div>
+      <h1>{title}</h1>
+      <p class="proj-meta">{service}<span aria-hidden="true">  /  </span>{dates}<span aria-hidden="true">  /  </span>{role}</p>
+    </header>
+
+    {Astro.slots.has('lead') && (
+      <div class="wrap proj-lead"><slot name="lead" /></div>
+    )}
+
+    <div class="wrap proj-body">
+      <aside class="specs" aria-label="Key numbers">
+        <table>
+          <caption>Data sheet</caption>
+          <tbody>
+            {specs.map((s) => (
+              <tr><th scope="row">{s.label}</th><td>{s.value}</td></tr>
+            ))}
+          </tbody>
+        </table>
+        {repo && (
+          <a class="tag tag--alu" href={repo}><Icon name="external" />Code on GitHub</a>
+        )}
+      </aside>
+      <div class="prose">
+        <slot />
+      </div>
+    </div>
+
+    <footer class="wrap proj-foot">
+      <a class="tag" href={person.resume} download><Icon name="download" />Download resume</a>
+      <a class="tag tag--alu" href={`mailto:${person.email}`}><Icon name="mail" />Email Rami</a>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  .proj-head {
+    padding-top: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+
+  .back :global(svg) {
+    width: 1.05rem;
+    height: 1.05rem;
+    transform: scaleX(-1);
+  }
+
+  .back:hover span {
+    text-decoration: underline;
+  }
+
+  .proj-pipe {
+    margin-top: 2rem;
+    margin-inline: calc(var(--gutter) * -1);
+    height: 3.25rem;
+    background: var(--steel);
+    display: flex;
+    align-items: stretch;
+    padding-left: var(--gutter);
+  }
+
+  .proj-band {
+    display: block;
+    width: clamp(8rem, 18vw, 14rem);
+    background: var(--sheen), var(--band);
+    clip-path: polygon(0 0, calc(100% - 1.4rem) 0, 100% 50%, calc(100% - 1.4rem) 100%, 0 100%);
+  }
+
+  h1 {
+    margin-top: clamp(1.75rem, 4vw, 3rem);
+    font-size: clamp(2.75rem, 7vw, 6rem);
+    text-transform: uppercase;
+    max-width: 18ch;
+  }
+
+  .proj-meta {
+    margin-top: 1rem;
+    color: var(--ink-2);
+    font-size: 1.1rem;
+    white-space: pre-wrap;
+  }
+
+  .proj-body {
+    display: grid;
+    grid-template-columns: minmax(15rem, 21rem) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .specs {
+    position: sticky;
+    top: 1.5rem;
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+  }
+
+  .specs table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 2px solid var(--ink);
+  }
+
+  .specs caption {
+    text-align: left;
+    font-stretch: 85%;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    padding-bottom: 0.6rem;
+  }
+
+  .specs th,
+  .specs td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .specs th {
+    font-weight: 500;
+    color: var(--ink-2);
+    padding-right: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .specs td {
+    font-stretch: 80%;
+    font-weight: 750;
+    font-size: 1.15rem;
+    text-align: right;
+  }
+
+  .prose {
+    max-width: var(--measure);
+  }
+
+  .prose :global(h2) {
+    font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+    text-transform: uppercase;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .prose > :global(* + *) {
+    margin-top: 1rem;
+  }
+
+  .prose > :global(figure + *) {
+    margin-top: 2rem;
+  }
+
+  .prose :global(ul) {
+    margin: 1rem 0 0;
+    padding-left: 1.15rem;
+  }
+
+  .prose :global(li + li) {
+    margin-top: 0.5rem;
+  }
+
+  .prose :global(li::marker) {
+    color: var(--ink-2);
+  }
+
+  .prose :global(figure) {
+    margin: 2.25rem 0 0;
+  }
+
+  .proj-lead {
+    margin-top: clamp(2rem, 4vw, 3rem);
+  }
+
+  .proj-lead :global(figure) {
+    margin: 0;
+  }
+
+  .proj-lead :global(.scroller) {
+    overflow-x: auto;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: #fff;
+  }
+
+  .proj-lead :global(.scroller img) {
+    min-width: 56rem;
+    width: 100%;
+  }
+
+  .proj-lead :global(figcaption),
+  .prose :global(figcaption) {
+    margin-top: 0.7rem;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+  }
+
+  .proj-lead :global(figcaption b),
+  .prose :global(figcaption b) {
+    color: var(--ink);
+    font-stretch: 85%;
+    letter-spacing: 0.04em;
+    margin-right: 0.4rem;
+  }
+
+  .prose :global(figure img) {
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+  }
+
+  .prose :global(.callout) {
+    margin-top: 1.5rem;
+    padding: 1.1rem 1.25rem;
+    background: var(--ground-deep);
+    border-radius: 3px;
+  }
+
+  .proj-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: clamp(3.5rem, 7vw, 5rem);
+  }
+
+  @media (max-width: 900px) {
+    .proj-body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .specs {
+      position: static;
+    }
+  }
+</style>

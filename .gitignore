@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.astro/
+
+# Source reports hold a private client name, teammates' names and student numbers.
+# Reference only: never commit or publish them.
+APS360_Final_Report.pdf
+GreenSpark_*.docx
+Resume Template.pdf
+RamiZaineh_Resume.pdf
+507 Assignment 1.pdf
+CHE507 Assignment 2.pdf
+rami.jpg
+
+# Private working notes: they name teammates and record private decisions.
+# The repo is public (GitHub Pages), so these stay local.
+PRODUCT.md
+.impeccable/
+.claude/
