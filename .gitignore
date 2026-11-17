@@ -15,5 +15,7 @@ rami.jpg
 # Private working notes: they name teammates and record private decisions.
 # The repo is public (GitHub Pages), so these stay local.
 PRODUCT.md
+rami-portfolio-brief.md
+*.private.md
 .impeccable/
 .claude/
